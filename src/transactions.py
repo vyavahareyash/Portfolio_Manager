@@ -3,6 +3,17 @@ from datetime import datetime
 import os
 from .db_handler import add_transaction
 
+STOCK_LIST = 'data/sp500_symbols.txt'
+
+def validate_stock_symbol(stock_symbol):
+    with open(STOCK_LIST, 'r') as file:
+        symbols = [line.strip() for line in file]
+        
+    if stock_symbol in symbols:
+        return True
+    else:
+        False
+
 def show_transactions_page():
     st.title('Transactions')
     
@@ -18,9 +29,15 @@ def show_transactions_page():
         submitted = st.form_submit_button("Add Transaction")
         
         if submitted:
-            # Convert date to string
-            transaction_date_str = transaction_date.strftime("%Y-%m-%d")
-            
-            add_transaction(transaction_date_str, order_type, stock_symbol, quantity)
-            
-            st.success("Transaction added successfully!")
+            stock_symbol = stock_symbol.upper()
+            if not stock_symbol:
+                st.error("Stock symbol is required!")
+            elif not validate_stock_symbol(stock_symbol):
+                st.error(f"Invalid stock symbol: {stock_symbol}. Please enter a valid symbol.")
+            else:
+                
+                transaction_date_str = transaction_date.strftime("%Y-%m-%d")
+
+                add_transaction(transaction_date_str, order_type, stock_symbol, quantity)
+
+                st.success("Transaction added successfully!")

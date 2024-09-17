@@ -8,9 +8,9 @@ import time
 from src.home import show_home_page
 from src.trends import show_trends_page
 from src.transactions import show_transactions_page
-from src.db_handler import init_db
+# from src.db_handler import init_db
 
-init_db()
+
 
 # StreamLit App Config
 st.set_page_config(
