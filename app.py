@@ -8,12 +8,44 @@ import time
 from src.home import show_home_page
 from src.trends import show_trends_page
 from src.transactions import show_transactions_page
+from src.db_handler import init_db
+
+init_db()
 
 # StreamLit App Config
 st.set_page_config(
     page_title="Portfolio Management",
     page_icon="🪙"
 )
+
+# Inject custom CSS to change the form background
+st.markdown(
+    """
+    <style>
+    /* Change the form background color */
+    .form-container {
+        background-color: rgba(0, 0, 0, 0.8);
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 600px;
+        margin: auto;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# # Inject custom CSS to change the text color
+# st.markdown(
+#     """
+#     <style>
+#     .stApp {
+#         color: black;
+#     }
+#     </style>
+#     """,
+#     unsafe_allow_html=True
+# )
 
 def get_base64(bin_file):
     with open(bin_file, 'rb') as f:
