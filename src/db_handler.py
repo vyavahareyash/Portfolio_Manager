@@ -4,12 +4,12 @@ import yfinance as yf
 DATABASE = 'portfolio.db'
 TABLE ='Transactions'
 
-def add_transaction(transaction_date_str, order_type, stock_symbol, quantity):
+def add_transaction(transaction_date_str, order_type, stock_symbol, quantity, unit_price):
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
     
-    cursor.execute(f"""INSERT INTO {TABLE} (date, order_type, stock_symbol, quantity) VALUES (?, ?, ?, ?)""", 
-                   (transaction_date_str, order_type, stock_symbol, quantity))
+    cursor.execute(f"""INSERT INTO {TABLE} (date, order_type, stock_symbol, quantity, unit_price) VALUES (?, ?, ?, ?,?)""", 
+                   (transaction_date_str, order_type, stock_symbol, quantity, unit_price))
     
     conn.commit()
     conn.close()

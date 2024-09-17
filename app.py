@@ -64,7 +64,7 @@ def set_background(png_file):
     ''' % bin_str
     st.markdown(page_bg_img, unsafe_allow_html=True)
     
-set_background('assets/bg_1.jpeg')
+set_background('assets/bg_pat2.png')
 
 
 def menu_bar():

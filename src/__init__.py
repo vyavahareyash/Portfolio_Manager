@@ -13,7 +13,8 @@ cursor.execute(f'''
         date TEXT NOT NULL,
         order_type TEXT NOT NULL,
         stock_symbol TEXT NOT NULL,
-        quantity INTEGER NOT NULL
+        quantity INTEGER NOT NULL,
+        unit_price REAL NOT NULL
     )
 ''')
 

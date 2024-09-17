@@ -30,7 +30,7 @@ def show_trends_page():
                     st.error("Could not get stock data.")
                 else:
                     with st.spinner('Loading chart...'):
-                        fig = px.line(stock_data, x='Date', y='Adj Close', title=f'{stock_symbol} Stock Price Trend')
+                        fig = px.line(stock_data, x='Date', y='Close', title=f'{stock_symbol} Stock Price Trend')
 
                     # Display the chart
                     st.title('Stock Price Trend')
