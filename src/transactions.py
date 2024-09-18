@@ -56,12 +56,17 @@ def show_transactions_page():
         
         submitted = st.form_submit_button("Add Transaction")
         if submitted:
-            quantity_available = available_stocks.get(stock_symbol)
-            if not quantity_available:
-                st.error(f"Stock {stock_symbol} not available in your portfolio.")
-            elif quantity > quantity_available:
-                st.error(f"Insufficient quantity for {stock_symbol}. You have {available_stocks[stock_symbol]} shares.")
-            else:
+            flag = False
+            if order_type == 'Sell':
+                quantity_available = available_stocks.get(stock_symbol)
+                if not quantity_available:
+                    st.error(f"Stock {stock_symbol} not available in your portfolio.")
+                    flag=True
+                elif quantity > quantity_available:
+                    st.error(f"Insufficient quantity for {stock_symbol}. You have {available_stocks[stock_symbol]} shares.")
+                    flag=True
+
+            if not flag:
                 with st.spinner("Getting price..."):
                     stock_data = get_historical_stock_data(stock_symbol, start_date, end_date)
                 if stock_data is None:

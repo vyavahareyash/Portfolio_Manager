@@ -3,14 +3,15 @@ import yfinance as yf
 import pandas as pd
 
 DATABASE = 'portfolio.db'
-TABLE ='Transactions'
+TABLE_TRANSACTION ='Transactions'
 STOCK_LIST = 'data/sp500_symbols.txt'
+TABLE_POSITION = 'Positions'
 
 def add_transaction(transaction_date_str, order_type, stock_symbol, quantity, unit_price):
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
     
-    cursor.execute(f"""INSERT INTO {TABLE} (date, order_type, stock_symbol, quantity, unit_price) VALUES (?, ?, ?, ?,?)""", 
+    cursor.execute(f"""INSERT INTO {TABLE_TRANSACTION} (date, order_type, stock_symbol, quantity, unit_price) VALUES (?, ?, ?, ?,?)""", 
                    (transaction_date_str, order_type, stock_symbol, quantity, unit_price))
     
     conn.commit()
@@ -18,7 +19,7 @@ def add_transaction(transaction_date_str, order_type, stock_symbol, quantity, un
     
 def get_all_transactions():
     conn = sqlite3.connect(DATABASE)
-    query = f"SELECT * FROM {TABLE}"
+    query = f"SELECT * FROM {TABLE_TRANSACTION}"
     
     # Read the data into a DataFrame
     df = pd.read_sql(query, conn)
@@ -31,8 +32,8 @@ def get_all_transactions():
 def get_holding_stocks():
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
-    bought_query = f"SELECT stock_symbol, sum(quantity) FROM {TABLE} WHERE order_type = 'Buy' GROUP BY stock_symbol"
-    sold_query = f"SELECT stock_symbol, sum(quantity) FROM {TABLE} WHERE order_type = 'Sell' GROUP BY stock_symbol"
+    bought_query = f"SELECT stock_symbol, sum(quantity) FROM {TABLE_TRANSACTION} WHERE order_type = 'Buy' GROUP BY stock_symbol"
+    sold_query = f"SELECT stock_symbol, sum(quantity) FROM {TABLE_TRANSACTION} WHERE order_type = 'Sell' GROUP BY stock_symbol"
     
     cursor.execute(bought_query)
     stocks_bought = cursor.fetchall()
@@ -88,3 +89,4 @@ def validate_stock_symbol(stock_symbol):
         return True
     else:
         False
+        
