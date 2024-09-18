@@ -1,11 +1,26 @@
 import sqlite3
 import yfinance as yf
 import pandas as pd
+from datetime import datetime, timedelta
 
 DATABASE = 'portfolio.db'
 TABLE_TRANSACTION ='Transactions'
 STOCK_LIST = 'data/sp500_symbols.txt'
 TABLE_POSITION = 'Positions'
+
+def get_transacted_symbols():
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+    
+    query = f'SELECT DISTINCT stock_symbol FROM {TABLE_TRANSACTION}'
+    
+    cursor.execute(query)
+    
+    result = cursor.fetchall()
+    
+    conn.close()
+    
+    return [x[0] for x in result]
 
 def add_transaction(transaction_date_str, order_type, stock_symbol, quantity, unit_price):
     conn = sqlite3.connect(DATABASE)
@@ -90,3 +105,75 @@ def validate_stock_symbol(stock_symbol):
     else:
         False
         
+        
+def get_seq_stock_tnx(stock_symbol):
+    conn = sqlite3.connect(DATABASE)
+    
+    query = f"SELECT date, stock_symbol, unit_price, order_type, quantity FROM transactions WHERE stock_symbol = ?"
+    transactions = pd.read_sql(query, conn, params=(stock_symbol,))
+    transactions['date'] = pd.to_datetime(transactions['date'])
+    transactions = transactions.sort_values(by='date')
+    
+    conn.close()
+    
+    return transactions
+        
+def get_positions():
+    conn = sqlite3.connect(DATABASE)
+    # cursor = conn.cursor()
+    
+    df = pd.DataFrame(columns=['stock_symbol', 'total_quantity', 'realized_pl', 'unrealized_pl'])
+
+    
+    for stock_symbol in get_transacted_symbols():
+        # query = f"SELECT date, stock_symbol, unit_price, order_type, quantity FROM transactions WHERE stock_symbol = ?"
+        # transactions = pd.read_sql(query, conn, params=(stock_symbol,))
+        # transactions['date'] = pd.to_datetime(transactions['date'])
+        # transactions = transactions.sort_values(by='date')
+        transactions = get_seq_stock_tnx(stock_symbol)
+        total_quantity = 0
+        total_cost = 0
+        realized_pl = 0 
+
+        for index, row in transactions.iterrows():
+            if row['order_type'] == 'Buy':
+                # Update total quantity and total cost for buy orders
+                total_quantity += row['quantity']
+                total_cost += row['unit_price'] * row['quantity']
+            
+            elif row['order_type'] == 'Sell':
+                # Calculate realized profit/loss for sell orders
+                avg_buy_price = total_cost / total_quantity if total_quantity > 0 else 0
+                # sell_value = row['unit_price'] * row['quantity']
+                realized_pl += (row['unit_price'] - avg_buy_price) * row['quantity']
+                
+                # Update total quantity and total cost
+                total_quantity -= row['quantity']
+                total_cost = avg_buy_price * total_quantity
+                
+        # Calculate unrealized profit/loss based on current stock price
+
+        # Get today's date
+
+        # Get date after 10 days
+        start_date = (datetime.today() - timedelta(days=10)).strftime('%Y-%m-%d')
+        end_date = datetime.today().strftime('%Y-%m-%d')
+        
+        stock_data = get_historical_stock_data(stock_symbol,start_date,end_date)  # Assume a current price, replace with actual
+        current_price = stock_data['Close'].iloc[-1]
+        avg_buy_price = total_cost / total_quantity if total_quantity > 0 else 0
+        unrealized_pl = (current_price - avg_buy_price) * total_quantity
+        
+        results = [{
+            'stock_symbol':stock_symbol,
+            'total_quantity':total_quantity,
+            'realized_pl':realized_pl,
+            'unrealized_pl':unrealized_pl
+            }]
+        
+        df = pd.concat([df, pd.DataFrame(results)], ignore_index=True)
+
+    
+    conn.close()
+    return df
+
