@@ -1,5 +1,6 @@
 import sqlite3
 import yfinance as yf
+import pandas as pd
 
 DATABASE = 'portfolio.db'
 TABLE ='Transactions'
@@ -13,6 +14,20 @@ def add_transaction(transaction_date_str, order_type, stock_symbol, quantity, un
     
     conn.commit()
     conn.close()
+    
+def get_transactions():
+    conn = sqlite3.connect(DATABASE)
+    query = f"SELECT * FROM {TABLE}"
+    
+    # Read the data into a DataFrame
+    df = pd.read_sql(query, conn)
+    
+    # Close the connection
+    conn.close()
+    
+    return df
+    
+    
     
     
 def get_historical_stock_data(symbol, start_date, end_date):

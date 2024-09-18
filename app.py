@@ -8,6 +8,7 @@ import time
 from src.home import show_home_page
 from src.trends import show_trends_page
 from src.transactions import show_transactions_page
+from src.positions import show_positions_page
 # from src.db_handler import init_db
 
 
@@ -64,11 +65,11 @@ def set_background(png_file):
     ''' % bin_str
     st.markdown(page_bg_img, unsafe_allow_html=True)
     
-set_background('assets/bg_pat2.png')
+set_background('assets/bg_2.jpg')
 
 
 def menu_bar():
-    pages = ['Home', 'Stock Trends', 'Bonds', 'Transactions','Reports']
+    pages = ['Home', 'Stock Trends', 'Bonds', 'Transactions','Positions']
     menu = st.sidebar.selectbox("Pages",pages)
     if menu == 'Home':
         show_home_page()
@@ -78,8 +79,8 @@ def menu_bar():
         pass
     elif menu == 'Transactions':
         show_transactions_page()
-    elif menu == 'Reports':
-        pass
+    elif menu == 'Positions':
+        show_positions_page()
     
 if __name__ == '__main__':
     menu_bar()

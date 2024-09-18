@@ -1,7 +1,7 @@
 import streamlit as st
 from datetime import datetime, timedelta
 import os
-from .db_handler import add_transaction, get_historical_stock_data
+from .db_handler import add_transaction, get_historical_stock_data, get_transactions
 
 STOCK_LIST = 'data/sp500_symbols.txt'
 
@@ -47,11 +47,10 @@ def show_transactions_page():
                 with st.spinner("Getting price..."):
                     stock_data = get_historical_stock_data(stock_symbol, start_date, end_date)
                 
-                unit_price = stock_data['Close'][0]
-                
-                if unit_price is None:
+                if stock_data is None:
                     st.error(f"Could not fetch price for {stock_symbol} on {transaction_date_str}.")
                 else:
+                    unit_price = stock_data['Close'][0]
                     st.markdown(f"<h4>Unit price: <span style='color:yellow;'>${unit_price:.2f}</span></h4>", unsafe_allow_html=True)
                     total_price = unit_price * quantity
                     st.markdown(f"<h4>Total price: <span style='color:yellow;'>${total_price:.2f}</span></h4>", unsafe_allow_html=True)
@@ -61,10 +60,16 @@ def show_transactions_page():
             with st.spinner("Getting price..."):
                 stock_data = get_historical_stock_data(stock_symbol, start_date, end_date)
             
-            unit_price = stock_data['Close'][0]
-            if unit_price is None:
+            # unit_price = stock_data['Close'][0]
+            if stock_data is None:
                 st.error("Could not fetch price for {stock_symbol} on {transaction_date_str}.")
             else:
+                unit_price = stock_data['Close'][0]
                 with st.spinner("Adding transaction..."):
                     add_transaction(transaction_date_str, order_type, stock_symbol, quantity, unit_price)
                     st.success("Transaction added successfully!")
+    
+    with st.spinner("Loading transactions..."):
+        all_transactions = get_transactions()
+    st.title("All Transactions")
+    st.table(all_transactions)
