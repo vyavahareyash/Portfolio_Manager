@@ -60,7 +60,6 @@ def show_transactions_page():
             with st.spinner("Getting price..."):
                 stock_data = get_historical_stock_data(stock_symbol, start_date, end_date)
             
-            # unit_price = stock_data['Close'][0]
             if stock_data is None:
                 st.error("Could not fetch price for {stock_symbol} on {transaction_date_str}.")
             else:
@@ -72,4 +71,5 @@ def show_transactions_page():
     with st.spinner("Loading transactions..."):
         all_transactions = get_transactions()
     st.title("All Transactions")
-    st.table(all_transactions)
+    with st.spinner("Fetching transactions..."):
+        st.dataframe(all_transactions)
