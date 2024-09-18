@@ -4,6 +4,7 @@ import pandas as pd
 
 DATABASE = 'portfolio.db'
 TABLE ='Transactions'
+STOCK_LIST = 'data/sp500_symbols.txt'
 
 def add_transaction(transaction_date_str, order_type, stock_symbol, quantity, unit_price):
     conn = sqlite3.connect(DATABASE)
@@ -15,7 +16,7 @@ def add_transaction(transaction_date_str, order_type, stock_symbol, quantity, un
     conn.commit()
     conn.close()
     
-def get_transactions():
+def get_all_transactions():
     conn = sqlite3.connect(DATABASE)
     query = f"SELECT * FROM {TABLE}"
     
@@ -27,7 +28,32 @@ def get_transactions():
     
     return df
     
+def get_holding_stocks():
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+    bought_query = f"SELECT stock_symbol, sum(quantity) FROM {TABLE} WHERE order_type = 'Buy' GROUP BY stock_symbol"
+    sold_query = f"SELECT stock_symbol, sum(quantity) FROM {TABLE} WHERE order_type = 'Sell' GROUP BY stock_symbol"
     
+    cursor.execute(bought_query)
+    stocks_bought = cursor.fetchall()
+    stocks_bought = dict(stocks_bought)
+    
+    cursor.execute(sold_query)
+    stocks_sold = cursor.fetchall()
+    stocks_sold = dict(stocks_sold)
+     
+    available_stocks = {}
+    
+    for stock, buy_qty in stocks_bought.items():
+        sell_qty = stocks_sold.get(stock, 0)  # Get the sell quantity, default to 0 if not sold
+        available_qty = buy_qty - sell_qty
+        
+        if available_qty > 0:
+            available_stocks[stock] = available_qty
+    
+    conn.close()
+    
+    return available_stocks
     
     
 def get_historical_stock_data(symbol, start_date, end_date):
@@ -48,3 +74,17 @@ def get_historical_stock_data(symbol, start_date, end_date):
         return None
     
     return stock_data.reset_index()
+
+def get_all_stock_symbols():
+    with open(STOCK_LIST, 'r') as file:
+        symbols = [line.strip() for line in file]
+    return symbols
+
+def validate_stock_symbol(stock_symbol):
+    with open(STOCK_LIST, 'r') as file:
+        symbols = [line.strip() for line in file]
+        
+    if stock_symbol in symbols:
+        return True
+    else:
+        False
