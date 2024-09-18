@@ -29,10 +29,10 @@ def show_trends_page():
                 if stock_data is None:
                     st.error("Could not get stock data.")
                 else:
-                    st.title('Stock Price Trend')
                     stock_data['Date'] = pd.to_datetime(stock_data['Date'])
                     
                     with st.spinner('Loading chart...'):
+                        st.title('Stock Price Trend')
                         fig = px.line(stock_data, x='Date', y='Close', title=f'{stock_symbol} Stock Price Trend')
                         # Display the chart
                         st.plotly_chart(fig)

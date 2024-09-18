@@ -113,7 +113,8 @@ def get_seq_stock_tnx(stock_symbol):
     transactions = pd.read_sql(query, conn, params=(stock_symbol,))
     transactions['date'] = pd.to_datetime(transactions['date'])
     transactions = transactions.sort_values(by='date')
-    
+    transactions['date'] = transactions['date'].dt.strftime('%Y-%m-%d')
+
     conn.close()
     
     return transactions
@@ -122,7 +123,7 @@ def get_positions():
     conn = sqlite3.connect(DATABASE)
     # cursor = conn.cursor()
     
-    df = pd.DataFrame(columns=['stock_symbol', 'total_quantity', 'realized_pl', 'unrealized_pl'])
+    df = pd.DataFrame(columns=['stock_symbol', 'investment_amount','holding_quantity','avg_buy_price', 'current_price', 'realized_p&l', 'unrealized_p&l', 'p&l_%'])
 
     
     for stock_symbol in get_transacted_symbols():
@@ -147,28 +148,29 @@ def get_positions():
                 # sell_value = row['unit_price'] * row['quantity']
                 realized_pl += (row['unit_price'] - avg_buy_price) * row['quantity']
                 
+                
                 # Update total quantity and total cost
                 total_quantity -= row['quantity']
                 total_cost = avg_buy_price * total_quantity
                 
-        # Calculate unrealized profit/loss based on current stock price
-
-        # Get today's date
-
-        # Get date after 10 days
         start_date = (datetime.today() - timedelta(days=10)).strftime('%Y-%m-%d')
         end_date = datetime.today().strftime('%Y-%m-%d')
         
-        stock_data = get_historical_stock_data(stock_symbol,start_date,end_date)  # Assume a current price, replace with actual
+        stock_data = get_historical_stock_data(stock_symbol,start_date,end_date)
         current_price = stock_data['Close'].iloc[-1]
         avg_buy_price = total_cost / total_quantity if total_quantity > 0 else 0
         unrealized_pl = (current_price - avg_buy_price) * total_quantity
+        pl_p = (unrealized_pl / total_cost) * 100
         
         results = [{
             'stock_symbol':stock_symbol,
-            'total_quantity':total_quantity,
-            'realized_pl':realized_pl,
-            'unrealized_pl':unrealized_pl
+            'investment_amount': total_cost,
+            'holding_quantity':total_quantity,
+            'avg_buy_price':round(avg_buy_price,2),
+            'current_price':round(current_price,2),
+            'realized_p&l':round(realized_pl,2),
+            'unrealized_p&l':round(unrealized_pl,2),
+            'p&l_%': round(pl_p,2)
             }]
         
         df = pd.concat([df, pd.DataFrame(results)], ignore_index=True)
