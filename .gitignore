@@ -1,5 +1,5 @@
 # Data files
-
+*.db
 
 # Test folder
 Notebooks
