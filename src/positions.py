@@ -1,5 +1,21 @@
 import streamlit as st
 from .db_handler import get_positions,get_transacted_symbols,get_seq_stock_tnx
+import plotly.express as px
+import pandas as pd
+
+def show_charts(df):
+    st.title("Stock Performance and Distribution")
+
+    with st.spinner("Preparing charts..."):
+        # Pie Chart for Distribution Based on Quantity
+        fig_pie = px.pie(df, names='stock_symbol', values='holding_quantity', title='Stock Quantity Distribution')
+        st.plotly_chart(fig_pie)
+
+        # Bar Chart for Performance Based on P&L Percentage
+        fig_bar = px.bar(df, x='stock_symbol', y='p&l_%', title='Stock Performance Based on P&L Percentage', labels={'p&l_%': 'P&L (%)'})
+        fig_bar.update_traces(marker_color=df['p&l_%'].apply(lambda x: 'green' if x > 0 else 'red'))
+
+        st.plotly_chart(fig_bar)
 
 def show_positions_page():
     
@@ -37,3 +53,5 @@ def show_positions_page():
     stock_txn = get_seq_stock_tnx(stock_symbol)
     
     st.dataframe(stock_txn)
+    
+    show_charts(positions)
