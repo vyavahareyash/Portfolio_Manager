@@ -8,7 +8,7 @@ TABLE ='Transactions'
 def add_transaction(transaction_date_str, order_type, stock_symbol, quantity, unit_price):
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
-    
+        
     cursor.execute(f"""INSERT INTO {TABLE} (date, order_type, stock_symbol, quantity, unit_price) VALUES (?, ?, ?, ?,?)""", 
                    (transaction_date_str, order_type, stock_symbol, quantity, unit_price))
     
@@ -19,6 +19,7 @@ def get_transactions():
     conn = sqlite3.connect(DATABASE)
     query = f"SELECT * FROM {TABLE}"
     
+    
     # Read the data into a DataFrame
     df = pd.read_sql(query, conn)
     
@@ -27,7 +28,19 @@ def get_transactions():
     
     return df
     
+def get_available_stocks():
+    conn = sqlite3.connect(DATABASE, check_same_thread=False)
     
+    cursor = conn.cursor()
+    query = f"SELECT DISTINCT stock_symbol FROM {TABLE}"
+    
+    result = cursor.execute(query)
+    result = cursor.fetchall()
+    
+    available_stocks = [x[0] for x in result]
+
+    conn.close()
+    return available_stocks
     
     
 def get_historical_stock_data(symbol, start_date, end_date):
