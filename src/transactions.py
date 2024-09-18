@@ -72,4 +72,4 @@ def show_transactions_page():
     with st.spinner("Loading transactions..."):
         all_transactions = get_transactions()
     st.title("All Transactions")
-    st.table(all_transactions)
+    st.dataframe(all_transactions)

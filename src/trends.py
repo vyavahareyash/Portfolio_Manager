@@ -24,7 +24,8 @@ def show_trends_page():
             elif not validate_stock_symbol(stock_symbol):
                 st.error(f"Invalid stock symbol: {stock_symbol}. Please enter a valid symbol.")
             else:
-                stock_data = get_historical_stock_data(stock_symbol, start_date, end_date)
+                with st.spinner("Fetching data..."):
+                    stock_data = get_historical_stock_data(stock_symbol, start_date, end_date)
                 stock_data['Date'] = pd.to_datetime(stock_data['Date'])
                 if stock_data is None:
                     st.error("Could not get stock data.")
