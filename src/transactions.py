@@ -1,7 +1,7 @@
 import streamlit as st
 from datetime import datetime, timedelta
 import os
-from .db_handler import add_transaction, get_historical_stock_data, get_all_transactions, get_holding_stocks, get_all_stock_symbols, validate_stock_symbol
+from .db_handler import add_transaction, get_historical_stock_data, get_all_transactions, get_holding_stocks, get_all_stock_symbols#, validate_stock_symbol
 
 
 def show_transactions_page():
@@ -40,8 +40,8 @@ def show_transactions_page():
         if get_price_clicked:
             if not stock_symbol:
                 st.error("Stock symbol is required!")
-            elif not validate_stock_symbol(stock_symbol):
-                st.error(f"Invalid stock symbol: {stock_symbol}. Please enter a valid symbol.")
+            # elif not validate_stock_symbol(stock_symbol):
+            #     st.error(f"Invalid stock symbol: {stock_symbol}. Please enter a valid symbol.")
             else:                
                 with st.spinner("Getting price..."):
                     stock_data = get_historical_stock_data(stock_symbol, start_date, end_date)

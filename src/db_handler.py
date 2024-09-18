@@ -96,14 +96,14 @@ def get_all_stock_symbols():
         symbols = [line.strip() for line in file]
     return symbols
 
-def validate_stock_symbol(stock_symbol):
-    with open(STOCK_LIST, 'r') as file:
-        symbols = [line.strip() for line in file]
+# def validate_stock_symbol(stock_symbol):
+#     with open(STOCK_LIST, 'r') as file:
+#         symbols = [line.strip() for line in file]
         
-    if stock_symbol in symbols:
-        return True
-    else:
-        False
+#     if stock_symbol in symbols:
+#         return True
+#     else:
+#         False
         
         
 def get_seq_stock_tnx(stock_symbol):
