@@ -9,14 +9,15 @@ from src.home import show_home_page
 from src.trends import show_trends_page
 from src.transactions import show_transactions_page
 from src.positions import show_positions_page
+from src.bonds import show_bonds_page
 # from src.db_handler import init_db
 
 
 
 # StreamLit App Config
 st.set_page_config(
-    page_title="Portfolio Management",
-    page_icon="🪙"
+    page_title="Portfolio Manager",
+    page_icon="💲"
 )
 
 # Inject custom CSS to change the form background
@@ -69,14 +70,14 @@ set_background('assets/background.jpg')
 
 
 def menu_bar():
-    pages = ['Home', 'Stock Trends', 'Bonds', 'Transactions','Positions']
+    pages = ['Home', 'Stock Trends', 'Transactions','Positions','Bonds',]
     menu = st.sidebar.selectbox("Pages",pages)
     if menu == 'Home':
         show_home_page()
     elif menu == 'Stock Trends':
         show_trends_page()
     elif menu == 'Bonds':
-        pass
+        show_bonds_page()
     elif menu == 'Transactions':
         show_transactions_page()
     elif menu == 'Positions':
