@@ -1,3 +1,11 @@
+# Data files
+*.db
+
+# Test folder
+Notebooks
+
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
